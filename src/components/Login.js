@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 
 export function Login() {
   const CLIENT_ID = "2efe8449eedb4392b50cf2b4a454e695";
-  const SCOPE = "playlist-read-collaborative playlist-read-private";
+  const SCOPE = "";
   const REDIRECT_URI = "http://localhost:3000";
   const STATE = generateRandomString(16);
-  const SHOW_DIALOG = false;
+  const SHOW_DIALOG = true;
 
   window.sessionStorage.setItem("state", STATE);
 
@@ -22,7 +22,6 @@ export function Login() {
   useEffect(() => {
     // Check if an existing token has expired. If yes log out.
     let tokenExpiry = window.localStorage.getItem("tokenExpiry");
-    console.log(!!tokenExpiry);
     if (tokenExpiry && new Date().getTime() / 1000 > tokenExpiry) logout();
 
     const hash = window.location.hash;
