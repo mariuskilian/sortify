@@ -1,0 +1,88 @@
+.song-banner {
+    flex-grow: 1;
+    background-color: #222;
+    display: flex;
+    padding: 0.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    border-radius: 0.35em;
+}
+
+.song-banner:hover {
+    background-color: #444;
+}
+
+.song-banner:hover .artist, .song-banner:hover .album {
+    color: #FFF;
+}
+
+.song-index, .albumart, .songname-artist-wrapper, .album, .songlength{
+    margin-right: 1rem;
+}
+
+.songname, .artist, .album .vertical-container {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.song-index, .artist, .album {
+    color: #AAA;
+}
+
+.songname-artist-wrapper, .album, .songlength {
+    position: relative;
+}
+
+.song-index {
+    position: relative;
+    width: 1em;
+}
+
+.albumart {
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+.songinfo {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+}
+
+.songname {
+    font-weight: bold;
+    margin-bottom: 0.25em;
+}
+
+.album {
+    width: 35%;
+}
+
+.songname-artist-wrapper {
+    width: 65%;
+}
+
+.songlength {
+    width: 4rem;
+}
+
+.context-menu {
+    position: relative;
+    width: 0.5em;
+    color: #999;
+    visibility: hidden;
+}
+
+.song-banner:hover .context-menu {
+    visibility: visible
+}
+
+.vertical-container {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+}

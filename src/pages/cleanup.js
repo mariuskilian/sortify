@@ -1,10 +1,13 @@
-import { FilterPasseSongs } from "../components/FilterPasseSongs";
+import { PlaylistBox } from "../components/PlaylistBox";
 
-export function Cleanup() {
+export function Cleanup(props) {
   return (
-    <div>
+    <>
       <h1>Cleanup</h1>
-      <FilterPasseSongs></FilterPasseSongs>
-    </div>
+      {!props.playlists && <p>Loading...</p>}
+      {props.playlists?.map((playlist, i) => {
+        return <PlaylistBox key={i} playlist={playlist} />;
+      })}
+    </>
   );
 }

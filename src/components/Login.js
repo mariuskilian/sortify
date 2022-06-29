@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 
 export function Login() {
   const CLIENT_ID = "2efe8449eedb4392b50cf2b4a454e695";
-  const SCOPE = "";
-  const REDIRECT_URI = "http://localhost:3000";
+  const SCOPE = "playlist-read-private user-library-read";
+  const REDIRECT_URI = window.location.origin;
   const STATE = generateRandomString(16);
-  const SHOW_DIALOG = true;
+  const SHOW_DIALOG = false;
 
   window.sessionStorage.setItem("state", STATE);
 
