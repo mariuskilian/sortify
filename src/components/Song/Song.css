@@ -14,7 +14,21 @@
     background-color: #444;
 }
 
-.song-banner:hover .artist, .song-banner:hover .album {
+.song-banner.selected {
+    background-color: #666;
+}
+
+.song-banner.selected:not(.first-select, .last-select) {
+    border-radius: 0;
+}
+
+.song-banner.selected:not(.last-select) {
+    box-shadow: 0 15px  #666;
+}
+
+.song-banner:hover .artist, .song-banner:hover .album,
+.song-banner.selected .artist, .song-banner.selected .album,
+.song-banner.selected .song-index {
     color: #FFF;
 }
 

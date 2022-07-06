@@ -21,7 +21,8 @@
 .song-list {
     margin-top: 2px;
     margin-bottom: 2px;
-    overflow: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none; /* for Internet Explorer, Edge */
     scrollbar-width: none; /* for Firefox */
 }

@@ -1,14 +1,26 @@
 import "./App.css";
 import { FeatureBar } from "./components/FeatureBar";
 import { Navbar } from "./components/Navbar";
-import { DataHolder } from "./components/DataHolder";
+import { DataProvider } from "./contexts/DataContext";
+import { LoginProvider } from "./contexts/LoginContext";
+import { Routes, Route } from "react-router-dom";
+import { Home, Cleanup, ListenLater, Snapshots } from "./pages";
 
 function App() {
   return (
     <div className="App">
-      <Navbar />
+      <LoginProvider>
+        <Navbar />
+      </LoginProvider>
       <FeatureBar />
-      <DataHolder />
+      <DataProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/cleanup" element={<Cleanup />} />
+          <Route path="/listenlater" element={<ListenLater />} />
+          <Route path="/snapshots" element={<Snapshots />} />
+        </Routes>
+      </DataProvider>
     </div>
   );
 }

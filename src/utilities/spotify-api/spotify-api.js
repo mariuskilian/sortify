@@ -7,7 +7,9 @@ export async function getUserProfile() {
 }
 
 export async function getLikedSongs() {
-  return await aggrRequest("/me/tracks", { limit: 50 });
+  let result = await aggrRequest("/me/tracks", { limit: 50 });
+  result.data.forEach((track) => renameTrackInfo(track));
+  return result;
 }
 
 export async function getPlaylists(userId) {
@@ -38,9 +40,19 @@ export async function getPlaylists(userId) {
       // Combine into one object
       let playlist = plInfo;
       playlist.tracks = plTracks;
+      // Nest all playlist info into 'info' key to separate info and tracks
+      playlist = Object.assign({}, { info: playlist, tracks: playlist.tracks });
+      delete playlist.info.tracks;
+
+      playlist.tracks.forEach((track) => renameTrackInfo(track));
       return playlist;
     })
   ).then((playlists) => {
     return { status, data: playlists };
   });
+}
+
+// Rename nested key 'track' to 'info' for more clarity
+function renameTrackInfo(track) {
+  delete Object.assign(track, { info: track.track }).track;
 }

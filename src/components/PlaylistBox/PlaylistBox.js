@@ -2,12 +2,13 @@ import { SongList } from "../SongList";
 import "./PlaylistBox.css";
 
 export function PlaylistBox(props) {
-  const playlist = props.playlist;
+  const playlistInfo = props.playlistInfo;
+  const tracklist = props.tracklist;
   return (
     <>
-      <h3>{playlist?.name}</h3>
+      <h3>{playlistInfo?.name}</h3>
       <div className="playlist-box">
-        <SongList tracklist={playlist?.tracks} />
+        <SongList tracklist={tracklist} />
       </div>
     </>
   );

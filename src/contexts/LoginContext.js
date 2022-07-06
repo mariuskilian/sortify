@@ -1,25 +1,32 @@
-import { useEffect, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
-export function Login() {
-  const CLIENT_ID = "2efe8449eedb4392b50cf2b4a454e695";
-  const SCOPE = "playlist-read-private user-library-read";
-  const REDIRECT_URI = window.location.origin;
-  const STATE = generateRandomString(16);
-  const SHOW_DIALOG = false;
+const LoginContext = React.createContext();
 
+const CLIENT_ID = "2efe8449eedb4392b50cf2b4a454e695";
+const SCOPE = "playlist-read-private user-library-read";
+const REDIRECT_URI = window.location.origin;
+const STATE = generateRandomString(16);
+const SHOW_DIALOG = false;
+
+export function useLogin() {
+  return useContext(LoginContext);
+}
+
+export function LoginProvider({ children }) {
   window.sessionStorage.setItem("state", STATE);
 
-  var url = "https://accounts.spotify.com/authorize";
-  url += "?response_type=token";
-  url += "&client_id=" + encodeURIComponent(CLIENT_ID);
-  url += "&scope=" + encodeURIComponent(SCOPE);
-  url += "&redirect_uri=" + encodeURIComponent(REDIRECT_URI);
-  url += "&state=" + encodeURIComponent(STATE);
-  url += "&show_dialog=" + encodeURIComponent(SHOW_DIALOG);
+  const url =
+    "https://accounts.spotify.com/authorize" +
+    "?response_type=token" +
+    ("&client_id=" + encodeURIComponent(CLIENT_ID)) +
+    ("&scope=" + encodeURIComponent(SCOPE)) +
+    ("&redirect_uri=" + encodeURIComponent(REDIRECT_URI)) +
+    ("&state=" + encodeURIComponent(STATE)) +
+    ("&show_dialog=" + encodeURIComponent(SHOW_DIALOG));
 
   const [token, setToken] = useState("");
 
-  useEffect(() => {
+  const checkTokenValidity = () => {
     // Check if an existing token has expired. If yes log out.
     let tokenExpiry = window.localStorage.getItem("tokenExpiry");
     if (tokenExpiry && new Date().getTime() / 1000 > tokenExpiry) logout();
@@ -49,6 +56,10 @@ export function Login() {
     }
 
     setToken(token);
+  };
+
+  useEffect(() => {
+    checkTokenValidity();
   }, []);
 
   const logout = () => {
@@ -57,15 +68,13 @@ export function Login() {
     window.localStorage.removeItem("token");
   };
 
-  return (
-    <div>
-      {!token ? (
-        <a href={url}>Login to Spotify</a>
-      ) : (
-        <button onClick={logout}>Logout</button>
-      )}
-    </div>
-  );
+  const val = {
+    loggedIn: token && token !== "",
+    url: url,
+    logout: logout,
+  };
+
+  return <LoginContext.Provider value={val}>{children}</LoginContext.Provider>;
 }
 
 function generateRandomString(length) {

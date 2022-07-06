@@ -1,7 +1,7 @@
 import "./Navbar.css";
 import { Home } from "../../pages";
 import { Link } from "react-router-dom";
-import { Login } from "../Login";
+import { LoginButton } from "../LoginButton";
 
 export function Navbar() {
   return (
@@ -12,7 +12,7 @@ export function Navbar() {
         </Link>
       </div>
       <div className="login">
-        <Login />
+        <LoginButton />
       </div>
     </nav>
   );
