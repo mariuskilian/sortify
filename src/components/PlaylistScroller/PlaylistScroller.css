@@ -1,0 +1,93 @@
+:root {
+    --num-items-per-page: 5;
+    --space-between: 0.5em;
+    --page-index: 0;
+    --slider-padding: 1.5rem;
+}
+
+.playlist-scroller {
+    width: 100%;
+    height: 100%;
+    background-color: #333;
+    padding: 0.5em 0.25em;
+    border-radius: 0.25em;
+}
+
+/* Container */
+.playlistart-scroll-wrapper {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0.25em;
+}
+
+/* Slider */
+.playlistart-container {
+    display: flex;
+    width: calc(100% - 2 * var(--slider-padding));
+    transition: transform 350ms ease-in-out;
+    transform: translateX(calc(var(--page-index) * -100%))
+}
+
+/* Slider > img */
+.playlistart {
+    width: calc(100% / var(--num-items-per-page) - var(--space-between));
+    flex: 0 0;
+    aspect-ratio: 1 / 1;
+    margin: 0 calc(var(--space-between) / 2);
+    border-radius: 5%;
+    border: 1px solid #AAA;
+}
+
+.playlistart-text {
+    width: 100%;
+    margin: auto 0;
+    text-align: center;
+    color: #AAA;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.scroll-btn {
+    height: inherit;
+    z-index: 10;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-weight: bold;
+}
+
+.scroll-btn:hover {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.playlistart-scroll-wrapper:hover:not(.scroll-btn:hover) + .playlistart-text {
+    color: #FFF;
+}
+
+.playlistart:not(:hover) {
+    filter: brightness(50%);
+}
+
+.playlistart {
+    filter: brightness(100%);
+}
+
+.page-indicator {
+    display: flex;
+    justify-content: center;
+}
+
+.page-indicator > div {
+    height: 0.12em;
+    width: 1.3em;
+    margin: 0 0.12em 0.35em;
+    background-color: #666;
+}
+
+.page-indicator > div.active {
+    background-color: #AAA;
+}

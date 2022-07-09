@@ -31,6 +31,7 @@ export function Cleanup() {
     data.playlists?.forEach(
       (playlist) => (merged = merged.concat(playlist.tracks))
     );
+    // Remove duplicates
     merged = merged.filter((track, i) => {
       for (let j = 0; j < i; j++) {
         if (track.info.id === merged[j].info.id) return false;

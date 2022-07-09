@@ -21,6 +21,8 @@
 .song-list {
     margin-top: 2px;
     margin-bottom: 2px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none; /* for Internet Explorer, Edge */
@@ -29,8 +31,4 @@
 
 .song-list::-webkit-scrollbar {
     display: none; /* for Chrome, Safari */
-}
-
-.song-list-padding {
-    height: 0.5rem;
 }

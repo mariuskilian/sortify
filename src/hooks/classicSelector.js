@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { TWOS } from "../utilities/twos-complement";
+import { TWOS } from "../utilities/math-util";
 
-export function useSelector() {
+export function useClassicSelector() {
   const [selected, setSelected] = useState([]);
   const [lastSelected, setLastSelected] = useState(0);
 

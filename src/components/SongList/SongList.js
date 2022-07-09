@@ -1,10 +1,10 @@
 import "./SongList.css";
 import { Song } from "../Song";
 import { SongListHeader } from "../SongListHeader";
-import { useSelector } from "../../hooks/selector";
+import { useClassicSelector } from "../../hooks/classicSelector";
 
 export function SongList(props) {
-  const [selectSong, selectedSongs] = useSelector();
+  const [selectSong, selectedSongs] = useClassicSelector();
 
   function getSelectClassNames(i) {
     let classes = "";
@@ -20,26 +20,27 @@ export function SongList(props) {
     <div className="song-list-wrapper noselect">
       <SongListHeader />
       <div className="song-list">
-        <div className="song-list-padding"></div>
         {props.tracklist?.map((track, i) => {
           const trackinfo = track.info;
           return (
-            <Song
+            <span
               key={`song${trackinfo.id}`}
-              onClick={selectSong}
-              index={i}
-              selectionClasses={getSelectClassNames(i)}
-              songinfo={{
-                songname: trackinfo.name,
-                artist: trackinfo.artists[0].name,
-                album: trackinfo.album.name,
-                songlength: trackinfo.duration_ms,
-                albumart: trackinfo.album.images[1].url,
-              }}
-            />
+              onMouseDown={() => selectSong(i, true)}
+            >
+              <Song
+                index={i}
+                selectionClasses={getSelectClassNames(i)}
+                info={{
+                  id: trackinfo.id,
+                  songname: trackinfo.name,
+                  artists: trackinfo.artists.map((a) => a.name),
+                  album: trackinfo.album.name,
+                  albumart: trackinfo.album.images[1].url,
+                }}
+              />
+            </span>
           );
         })}
-        <div className="song-list-padding"></div>
       </div>
     </div>
   );
