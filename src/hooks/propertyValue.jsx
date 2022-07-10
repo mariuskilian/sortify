@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function usePropertyValue(property, ref = null) {
   const [propertyVal, _setPropertyVal] = useState(null);

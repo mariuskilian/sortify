@@ -1,10 +1,11 @@
+import styled, {css} from "styled-components";
 import { useRef, useState } from "react";
 
 import { mod } from "../utilities/math-util";
-import styled from "styled-components";
 import { useData } from "../contexts/DataContext";
 
 export function PlaylistScroller(props) {
+  //#region JS
   const data = useData();
 
   const playlistScrollerRef = useRef();
@@ -35,21 +36,21 @@ export function PlaylistScroller(props) {
 
   const scrollLeft = () => setPageIdx((i) => mod(--i, numPages));
   const scrollRight = () => setPageIdx((i) => mod(++i, numPages));
+  //#endregion
 
+  //#region HTML
   return (
     <PlaylistScrollerDiv ref={playlistScrollerRef}>
-      {numPages > 1 && (
-        <PageIndicatorContainer>
-          {Array.apply(null, new Array(numPages)).map((_, i) => (
-            <div
-              key={`pi_${i}`}
-              className={i === pageIdx ? "active" : ""}
-            ></div>
-          ))}
-        </PageIndicatorContainer>
-      )}
+      <PageIndicatorContainer>
+        {Array.apply(null, new Array(numPages === 1 ? 0 : numPages)).map((_, i) => (
+          <div
+            key={`pi_${i}`}
+            className={i === pageIdx ? "active" : ""}
+          ></div>
+        ))}
+      </PageIndicatorContainer>
       <PlaylistartScrollWrapper onMouseLeave={() => resetHoveredPlaylist()}>
-        {numPages > 1 && <ScrollBtn onClick={scrollLeft}>{"<"}</ScrollBtn>}
+        {numPages > 1 && <ScrollBtn left onClick={scrollLeft}>{"<"}</ScrollBtn>}
         <PlaylistartContainer pageIdx={pageIdx}>
           {containedPlaylistIndices.map((plIdx) => (
             <Playlistart
@@ -60,45 +61,19 @@ export function PlaylistScroller(props) {
             />
           ))}
         </PlaylistartContainer>
-        {numPages > 1 && <ScrollBtn onClick={scrollRight}>{">"}</ScrollBtn>}
+        {numPages > 1 && <ScrollBtn right onClick={scrollRight}>{">"}</ScrollBtn>}
       </PlaylistartScrollWrapper>
       <PlaylistartText>{hoveredPlaylist}</PlaylistartText>
     </PlaylistScrollerDiv>
   );
+  //#endregion
 }
 
 //#region Styles
-let numItemsPerPage = 5;
+let numItemsPerPage = 6;
 const spaceBetween = "0.5rem";
 const sliderPadding = "1.5rem";
-
-const PlaylistScrollerDiv = styled.div`
-  width: 100%;
-  height: 100%;
-  background-color: #333;
-  padding: 0.5em 0.25em;
-  border-radius: 0.25em;
-`;
-
-const PlaylistartScrollWrapper = styled.span`
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  justify-content: center;
-  width: 100%;
-  margin-bottom: 0.25em;
-
-  :hover:not(.scroll-btn:hover) + .playlistart-text {
-    color: #fff;
-  }
-`;
-
-const PlaylistartContainer = styled.span`
-  display: flex;
-  width: calc(100% - 2 * ${sliderPadding});
-  transition: transform 350ms ease-in-out;
-  transform: translateX(calc(${(props) => props.pageIdx} * -100%));
-`;
+const plBorderRadius = "0.25rem";
 
 const Playlistart = styled.img`
   width: calc(100% / ${numItemsPerPage} - ${spaceBetween});
@@ -113,8 +88,19 @@ const Playlistart = styled.img`
   }
 `;
 
+const PlaylistScrollerDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: #333;
+  padding: 0.5em 0;
+  border-radius: ${plBorderRadius};
+`;
+
 const PlaylistartText = styled.div`
   width: 100%;
+  height: 1.5em;
   margin: auto 0;
   text-align: center;
   color: #aaa;
@@ -124,26 +110,64 @@ const PlaylistartText = styled.div`
 `;
 
 const ScrollBtn = styled.button`
-  height: inherit;
+  height: 100%;
+  width: ${sliderPadding};
   z-index: 10;
   border: none;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
+  background-color: rgba(0, 0, 0, 0.4);
   font-weight: bold;
+  color: white;
+  transition: background-color 250ms ease-in-out;
 
   :hover {
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  ${(props) => {
+    if (props.left) return css`
+      margin-right: calc(${spaceBetween} / 2);
+      border-top-right-radius: ${plBorderRadius};
+      border-bottom-right-radius: ${plBorderRadius};
+    `;
+    if (props.right) return css`
+      margin-left: calc(${spaceBetween} / 2);
+      border-top-left-radius: ${plBorderRadius};
+      border-bottom-left-radius: ${plBorderRadius};
+    `;
+  }}
+`;
+
+const PlaylistartContainer = styled.span`
+  display: flex;
+  width: calc(100% - 2 * ${sliderPadding});
+  transition: transform 350ms ease-in-out;
+  transform: translateX(calc(${(props) => props.pageIdx} * -100%));
+`;
+
+const PlaylistartScrollWrapper = styled.span`
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  justify-content: center;
+  width: 100%;
+  height: fit-content;
+  margin-bottom: 0.25em;
+
+  &:hover:not(:has(${ScrollBtn}:hover)) ~ ${PlaylistartText} {
+    color: #fff;
   }
 `;
 
 const PageIndicatorContainer = styled.span`
+  height: 0.12em;
+  margin: 0 0 0.35em;
   display: flex;
   justify-content: center;
 
   & div {
-    height: 0.12em;
-    width: 1.3em;
-    margin: 0 0.12em 0.35em;
+    height: 100%;
+    width: 1.2em;
+    margin: 0 0.12em;
     background-color: #666;
 
     &.active {
