@@ -1,9 +1,11 @@
-import "./SongList.css";
-import { Song } from "../Song";
-import { SongListHeader } from "../SongListHeader";
-import { useClassicSelector } from "../../hooks/classicSelector";
+import "../styles/globals.css";
+import styled from "styled-components";
+import { Song } from "./Song";
+import { SongListHeader } from "./SongListHeader";
+import { useClassicSelector } from "../hooks/classicSelector";
 
 export function SongList(props) {
+  //#region JS
   const [selectSong, selectedSongs] = useClassicSelector();
 
   function getSelectClassNames(i) {
@@ -15,11 +17,13 @@ export function SongList(props) {
     }
     return classes;
   }
+  //#endregion
 
+  //#region HTML
   return (
-    <div className="song-list-wrapper noselect">
+    <SongListWrapper className="noselect">
       <SongListHeader />
-      <div className="song-list">
+      <SongListDiv className="noscrollbar">
         {props.tracklist?.map((track, i) => {
           const trackinfo = track.info;
           return (
@@ -41,7 +45,22 @@ export function SongList(props) {
             </span>
           );
         })}
-      </div>
-    </div>
+      </SongListDiv>
+    </SongListWrapper>
   );
+  //#endregion
 }
+
+//#region Styles
+const SongListWrapper = styled.div`
+  max-height: inherit;
+  flex-flow: column;
+  display: flex;
+`;
+
+const SongListDiv = styled.div`
+  margin: 2px 0;
+  padding: 0.5rem 0;
+  overflow-y: auto;
+`;
+//#endregion

@@ -1,13 +1,3 @@
-.song-list-wrapper {
-    max-height: inherit;
-    flex-flow: column;
-    display: flex;
-}
-
-.song-list-wrapper:hover {
-    cursor: default;
-}
-
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
       -webkit-user-select: none; /* Safari */
@@ -16,19 +6,14 @@
           -ms-user-select: none; /* Internet Explorer/Edge */
               user-select: none; /* Non-prefixed version, currently
                                     supported by Chrome, Edge, Opera and Firefox */
-  }
+}
 
-.song-list {
-    margin-top: 2px;
-    margin-bottom: 2px;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    overflow-y: auto;
+.noscrollbar {
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none; /* for Internet Explorer, Edge */
     scrollbar-width: none; /* for Firefox */
 }
-
-.song-list::-webkit-scrollbar {
+.noscrollbar::-webkit-scrollbar {
     display: none; /* for Chrome, Safari */
 }
+

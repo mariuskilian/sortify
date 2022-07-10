@@ -36,6 +36,7 @@ export function LoginProvider({ children }) {
 
     if (!token && hash) {
       const hashData = hash.substring(1).split("&");
+      // eslint-disable-next-line no-unused-vars
       const hashState = hashData
         .find((elem) => elem.startsWith("state"))
         .split("=")[1];
@@ -60,7 +61,7 @@ export function LoginProvider({ children }) {
 
   useEffect(() => {
     checkTokenValidity();
-  }, []);
+  });
 
   const logout = () => {
     setToken("");

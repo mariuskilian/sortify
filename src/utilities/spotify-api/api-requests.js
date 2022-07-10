@@ -23,6 +23,7 @@ export async function aggrRequest(url, params = {}) {
   let total;
   do {
     Object.assign(params, { offset: offset });
+    // eslint-disable-next-line
     await request(url, params).then(({ status: _status, data }) => {
       status = _status;
       items = items.concat(data.items);
