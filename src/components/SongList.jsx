@@ -1,7 +1,8 @@
 import "../styles/globals.css";
-import styled from "styled-components";
+
 import { Song } from "./Song";
 import { SongListHeader } from "./SongListHeader";
+import styled from "styled-components";
 import { useClassicSelector } from "../hooks/classicSelector";
 
 export function SongList(props) {
