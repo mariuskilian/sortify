@@ -1,10 +1,12 @@
 import "./App.css";
-import { FeatureBar } from "./components/FeatureBar";
-import { Navbar } from "./components/Navbar";
+
+import { Cleanup, Home, ListenLater, Snapshots } from "./pages";
+import { Route, Routes } from "react-router-dom";
+
 import { DataProvider } from "./contexts/DataContext";
+import { FeatureBar } from "./components/FeatureBar";
 import { LoginProvider } from "./contexts/LoginContext";
-import { Routes, Route } from "react-router-dom";
-import { Home, Cleanup, ListenLater, Snapshots } from "./pages";
+import { Navbar } from "./components/Navbar";
 
 function App() {
   return (

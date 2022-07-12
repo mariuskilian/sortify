@@ -1,8 +1,12 @@
 import styled, { css } from "styled-components";
 import { useMemo, useState } from "react";
 
+import { KEY__ITEMS_PER_PAGE } from "./PlaylistScrollerCalculator";
+import { getPropertyValue } from "../hooks/propertyValue";
 import { mod } from "../utilities/math-util";
 import { useData } from "../contexts/DataContext";
+
+export const PLAYLISTSCROLLER_ID = "playlist-scroller";
 
 export function PlaylistScroller(props) {
   //#region JS
@@ -20,7 +24,7 @@ export function PlaylistScroller(props) {
   }, [data.playlists, props.songid]);
 
   const numItems = containedPlaylistIndices.length;
-  const itemsPerPage = Math.min(numItems, 4);
+  const itemsPerPage = getPropertyValue(KEY__ITEMS_PER_PAGE);
   const numPages = Math.ceil(numItems / itemsPerPage);
 
   const hoveredPlaylistDefaultText = `Contained in ${
@@ -62,7 +66,7 @@ export function PlaylistScroller(props) {
       // Prevents song banner from being selected
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
-      itemsPerPage={itemsPerPage}
+      id={PLAYLISTSCROLLER_ID}
     >
       <PageIndicatorContainer>
         {Array(numPages === 1 ? 0 : numPages)
@@ -108,13 +112,13 @@ export function PlaylistScroller(props) {
 
 //#region Styles
 
-const sliderPadding = "1.5rem";
-const plBorderRadius = "0.25rem";
+export const CSS_REM__SLIDER_PADDING = 1.5;
+export const CSS_REM__MIN_SPACE_BETWEEN = 0.75;
+export const CSS_REM__PLAYLISTART_SIZE = 3.5;
 
-// const _spaceBetween = 0.5; // rem
-// const spaceBetween = _spaceBetween + "rem";
-const _playlistartSize = 3.5; // rem
-const playlistartSize = _playlistartSize + "rem";
+const sliderPadding = `${CSS_REM__SLIDER_PADDING}rem`;
+const playlistartSize = `${CSS_REM__PLAYLISTART_SIZE}rem`;
+const plBorderRadius = "0.25rem";
 
 const PlaylistScrollerDiv = styled.div`
   position: relative;
@@ -127,13 +131,9 @@ const PlaylistScrollerDiv = styled.div`
   border-radius: 0.5em;
   overflow: hidden;
 
-  ${(props) => {
-    const ipp = props.itemsPerPage;
-    return css`
-      --total-space: calc(100% - ${ipp} * ${playlistartSize});
-      --space-between: calc(var(--total-space) / (${ipp} + 1));
-    `;
-  }}
+  --ipp: var(--pscalc--items-per-page);
+  --total-space: calc(100% - var(--ipp) * ${playlistartSize});
+  --space-between: calc(var(--total-space) / (var(--ipp) + 1));
 `;
 
 const Playlistart = styled.img`

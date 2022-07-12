@@ -1,5 +1,6 @@
 import { PasseSongsFilter } from "../components/PasseSongsFilter";
 import { PlaylistBox } from "../components/PlaylistBox";
+import { PlaylistScrollerCalculator } from "../components/PlaylistScrollerCalculator";
 import { useData } from "../contexts/DataContext";
 import { useState } from "react";
 
@@ -43,6 +44,7 @@ export function Cleanup() {
 
   return (
     <>
+      <PlaylistScrollerCalculator />
       <h1>Cleanup</h1>
       {!data.isLoading && (
         <button onClick={() => switchView()}>switch view</button>

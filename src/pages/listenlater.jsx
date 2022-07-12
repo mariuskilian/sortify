@@ -1,4 +1,5 @@
 import { PlaylistScroller } from "../components/PlaylistScroller";
+import { PlaylistScrollerCalculator } from "../components/PlaylistScrollerCalculator";
 import { useData } from "../contexts/DataContext";
 
 export function ListenLater() {
@@ -8,8 +9,9 @@ export function ListenLater() {
 
   return (
     <>
+      <PlaylistScrollerCalculator />
       {!data.isLoading && (
-        <div style={{ width: 600 + "px", margin: 2 + "em" }}>
+        <div style={{ flexGrow: 1, margin: 2 + "em" }}>
           <PlaylistScroller songid={songId} />
         </div>
       )}
