@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useData } from "../contexts/DataContext";
 import { PasseSongsFilter } from "../components/PasseSongsFilter";
 import { PlaylistBox } from "../components/PlaylistBox";
+import { useData } from "../contexts/DataContext";
+import { useState } from "react";
 
 const VIEWS = {
   Playlist: "PLAYLIST_VIEW",

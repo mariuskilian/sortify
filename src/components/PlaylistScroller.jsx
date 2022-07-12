@@ -1,5 +1,5 @@
-import styled, {css} from "styled-components";
-import { useRef, useState } from "react";
+import styled, { css } from "styled-components";
+import { useMemo, useState } from "react";
 
 import { mod } from "../utilities/math-util";
 import { useData } from "../contexts/DataContext";
@@ -8,18 +8,20 @@ export function PlaylistScroller(props) {
   //#region JS
   const data = useData();
 
-  const playlistScrollerRef = useRef();
-
   const [pageIdx, setPageIdx] = useState(0);
 
-  let containedPlaylistIndices = [];
-  data.playlists.forEach((playlist, i) => {
-    if (playlist.tracks.map((t) => t.info.id).includes(props.songid))
-      containedPlaylistIndices.push(i);
-  });
+  const containedPlaylistIndices = useMemo(() => {
+    let result = [];
+    data.playlists.forEach((playlist, i) => {
+      if (playlist.tracks.map((t) => t.info.id).includes(props.songid))
+        result.push(i);
+    });
+    return result;
+  }, [data.playlists, props.songid]);
 
   const numItems = containedPlaylistIndices.length;
-  const numPages = Math.ceil(numItems / numItemsPerPage);
+  const itemsPerPage = Math.min(numItems, 4);
+  const numPages = Math.ceil(numItems / itemsPerPage);
 
   const hoveredPlaylistDefaultText = `Contained in ${
     containedPlaylistIndices.length
@@ -28,30 +30,62 @@ export function PlaylistScroller(props) {
     hoveredPlaylistDefaultText
   );
 
-  const updateHoveredPlaylist = (idx) =>
+  const [hover, setHover] = useState(false);
+  const updateHoveredPlaylist = (idx) => {
+    setHover(true);
     setHoveredPlaylist(data.playlists[idx].info.name);
-
-  const resetHoveredPlaylist = () =>
+  };
+  const resetHoveredPlaylist = () => {
+    setHover(false);
     setHoveredPlaylist(hoveredPlaylistDefaultText);
+  };
 
   const scrollLeft = () => setPageIdx((i) => mod(--i, numPages));
   const scrollRight = () => setPageIdx((i) => mod(++i, numPages));
+
+  const ScrollButton = ({ children, ...props }) => {
+    return (
+      <>
+        {numPages > 1 && (
+          <ScrollBtn onMouseEnter={resetHoveredPlaylist} {...props}>
+            {children}
+          </ScrollBtn>
+        )}
+      </>
+    );
+  };
   //#endregion
 
   //#region HTML
   return (
-    <PlaylistScrollerDiv ref={playlistScrollerRef}>
+    <PlaylistScrollerDiv
+      // Prevents song banner from being selected
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      itemsPerPage={itemsPerPage}
+    >
       <PageIndicatorContainer>
-        {Array.apply(null, new Array(numPages === 1 ? 0 : numPages)).map((_, i) => (
-          <div
-            key={`pi_${i}`}
-            className={i === pageIdx ? "active" : ""}
-          ></div>
-        ))}
+        {Array(numPages === 1 ? 0 : numPages)
+          .fill(true)
+          .map((_, i) => (
+            <div key={`pi_${i}`} className={i === pageIdx ? "active" : ""} />
+          ))}
       </PageIndicatorContainer>
-      <PlaylistartScrollWrapper onMouseLeave={() => resetHoveredPlaylist()}>
-        {numPages > 1 && <ScrollBtn left onClick={scrollLeft}>{"<"}</ScrollBtn>}
+      <PlaylistartScrollWrapper
+        onMouseLeave={() => resetHoveredPlaylist()}
+        hover={hover}
+      >
+        <ScrollButton
+          left
+          onClick={(e) => {
+            e.stopPropagation();
+            scrollLeft();
+          }}
+        >
+          {"<"}
+        </ScrollButton>
         <PlaylistartContainer pageIdx={pageIdx}>
+          <PlaylistartContainerPadding />
           {containedPlaylistIndices.map((plIdx) => (
             <Playlistart
               key={data.playlists[plIdx].info.id}
@@ -60,8 +94,11 @@ export function PlaylistScroller(props) {
               onMouseEnter={() => updateHoveredPlaylist(plIdx)}
             />
           ))}
+          <PlaylistartContainerPadding />
         </PlaylistartContainer>
-        {numPages > 1 && <ScrollBtn right onClick={scrollRight}>{">"}</ScrollBtn>}
+        <ScrollButton right onClick={scrollRight}>
+          {">"}
+        </ScrollButton>
       </PlaylistartScrollWrapper>
       <PlaylistartText>{hoveredPlaylist}</PlaylistartText>
     </PlaylistScrollerDiv>
@@ -70,32 +107,46 @@ export function PlaylistScroller(props) {
 }
 
 //#region Styles
-let numItemsPerPage = 6;
-const spaceBetween = "0.5rem";
+
 const sliderPadding = "1.5rem";
 const plBorderRadius = "0.25rem";
 
-const Playlistart = styled.img`
-  width: calc(100% / ${numItemsPerPage} - ${spaceBetween});
-  flex: 0 0;
-  aspect-ratio: 1 / 1;
-  margin: 0 calc(${spaceBetween} / 2);
-  border-radius: 5%;
-  border: 1px solid #aaa;
-
-  :not(:hover) {
-    filter: brightness(50%);
-  }
-`;
+// const _spaceBetween = 0.5; // rem
+// const spaceBetween = _spaceBetween + "rem";
+const _playlistartSize = 3.5; // rem
+const playlistartSize = _playlistartSize + "rem";
 
 const PlaylistScrollerDiv = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
   background-color: #333;
   padding: 0.5em 0;
+  border-radius: 0.5em;
+  overflow: hidden;
+
+  ${(props) => {
+    const ipp = props.itemsPerPage;
+    return css`
+      --total-space: calc(100% - ${ipp} * ${playlistartSize});
+      --space-between: calc(var(--total-space) / (${ipp} + 1));
+    `;
+  }}
+`;
+
+const Playlistart = styled.img`
+  flex: 0 0;
+  aspect-ratio: 1 / 1;
   border-radius: ${plBorderRadius};
+  border: 1px solid #aaa;
+  height: ${playlistartSize};
+  margin: 0 calc(var(--space-between) / 2);
+
+  &:not(:hover) {
+    filter: brightness(65%);
+  }
 `;
 
 const PlaylistartText = styled.div`
@@ -110,30 +161,35 @@ const PlaylistartText = styled.div`
 `;
 
 const ScrollBtn = styled.button`
-  height: 100%;
-  width: ${sliderPadding};
-  z-index: 10;
+  position: absolute;
+  height: calc(100% + 2px);
+  top: -1px;
+  width: calc(${sliderPadding} + 4px);
   border: none;
-  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  background-color: #333a;
   font-weight: bold;
   color: white;
-  transition: background-color 250ms ease-in-out;
-
-  :hover {
-    background-color: rgba(0, 0, 0, 0.7);
+  border: 0 solid #aaa0;
+  transition: border 350ms ease-in-out, background-color 200ms ease-in-out;
+  &:hover {
+    background-color: #3334;
+    border: 2px solid #aaa;
   }
 
   ${(props) => {
-    if (props.left) return css`
-      margin-right: calc(${spaceBetween} / 2);
-      border-top-right-radius: ${plBorderRadius};
-      border-bottom-right-radius: ${plBorderRadius};
-    `;
-    if (props.right) return css`
-      margin-left: calc(${spaceBetween} / 2);
-      border-top-left-radius: ${plBorderRadius};
-      border-bottom-left-radius: ${plBorderRadius};
-    `;
+    if (props.left)
+      return css`
+        left: -3px;
+        border-top-right-radius: ${plBorderRadius};
+        border-bottom-right-radius: ${plBorderRadius};
+      `;
+    if (props.right)
+      return css`
+        right: -3px;
+        border-top-left-radius: ${plBorderRadius};
+        border-bottom-left-radius: ${plBorderRadius};
+      `;
   }}
 `;
 
@@ -141,21 +197,32 @@ const PlaylistartContainer = styled.span`
   display: flex;
   width: calc(100% - 2 * ${sliderPadding});
   transition: transform 350ms ease-in-out;
-  transform: translateX(calc(${(props) => props.pageIdx} * -100%));
+  transform: translateX(
+    calc(${(props) => props.pageIdx} * (var(--space-between) - 100%))
+  );
+`;
+
+const PlaylistartContainerPadding = styled.div`
+  min-width: calc(var(--space-between) / 2);
+  flex: 0 0;
 `;
 
 const PlaylistartScrollWrapper = styled.span`
   display: flex;
   position: relative;
-  overflow: hidden;
   justify-content: center;
   width: 100%;
   height: fit-content;
   margin-bottom: 0.25em;
 
-  &:hover:not(:has(${ScrollBtn}:hover)) ~ ${PlaylistartText} {
-    color: #fff;
-  }
+  ${(props) => {
+    if (props.hover)
+      return css`
+        & ~ ${PlaylistartText} {
+          color: #fff;
+        }
+      `;
+  }}
 `;
 
 const PageIndicatorContainer = styled.span`

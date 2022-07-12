@@ -49,13 +49,11 @@ const Songname = styled.div`
 const ArtistAlbum = styled.div``;
 
 const SongnameArtistWrapper = styled.div`
-  min-width: 30%;
-  max-width: 30%;
+  width: 50%;
 `;
 
 const PlaylistScrollerWrapper = styled.div`
-  min-width: 70%;
-  max-width: 70%;
+  width: 50%;
 `;
 
 const ContextMenu = styled.div`
