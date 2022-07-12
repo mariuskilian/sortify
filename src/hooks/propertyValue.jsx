@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 
 export function usePropertyValue(property, ref = null) {
-  const [propertyVal, _setPropertyVal] = useState(null);
+  const [val, _setVal] = useState(null);
   useEffect(() => {
-    setPropertyVal(getPropertyValue(property, ref));
-  }, [property, ref]);
+    setVal(getPropertyValue(property, ref));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
-    setPropertyValue(property, propertyVal, ref);
-  }, [propertyVal, property, ref]);
+    setPropertyValue(property, val, ref);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [val]);
 
-  const setPropertyVal = (value) => {
+  const setVal = (value) => {
     if (value instanceof Function)
-      _setPropertyVal((oldVal) => value(oldVal).toString());
-    else _setPropertyVal(value.toString());
+      _setVal((oldVal) => value(oldVal).toString());
+    else _setVal(value.toString());
   };
-  return [propertyVal, setPropertyVal];
+  return [val, setVal];
 }
 
 export function getPropertyValue(property, ref = null) {
