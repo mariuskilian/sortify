@@ -1,10 +1,10 @@
 import styled, { css } from "styled-components";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { KEY__ITEMS_PER_PAGE } from "./PlaylistScrollerCalculator";
-import { getPropertyValue } from "../hooks/propertyValue";
 import { mod } from "../utilities/math-util";
 import { useData } from "../contexts/DataContext";
+import { usePropertyValue } from "../hooks/propertyValue";
 
 export const PLAYLISTSCROLLER_ID = "playlist-scroller";
 
@@ -13,6 +13,8 @@ export function PlaylistScroller(props) {
   const data = useData();
 
   const [pageIdx, setPageIdx] = useState(0);
+
+  const [itemsPerPage, setItemsPerPage] = usePropertyValue(KEY__ITEMS_PER_PAGE);
 
   const containedPlaylistIndices = useMemo(() => {
     let result = [];
@@ -24,8 +26,22 @@ export function PlaylistScroller(props) {
   }, [data.playlists, props.songid]);
 
   const numItems = containedPlaylistIndices.length;
-  const itemsPerPage = getPropertyValue(KEY__ITEMS_PER_PAGE);
-  const numPages = Math.ceil(numItems / itemsPerPage);
+  const numPages = Math.ceil(numItems / Math.max(1, itemsPerPage));
+
+  const ippObserver = new MutationObserver((mutations) => {
+    const currentValue =
+      mutations[0].target.style.getPropertyValue(KEY__ITEMS_PER_PAGE);
+    setItemsPerPage(Math.min(numItems, currentValue));
+  });
+  ippObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["style"],
+  });
+
+  useEffect(() => {
+    if (pageIdx >= numPages) setPageIdx(0);
+    // eslint-disable-next-line
+  }, [itemsPerPage]);
 
   const hoveredPlaylistDefaultText = `Contained in ${
     containedPlaylistIndices.length
@@ -66,40 +82,39 @@ export function PlaylistScroller(props) {
       // Prevents song banner from being selected
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
+      itemsPerPage={itemsPerPage}
+      isLoading={itemsPerPage === "0"}
       id={PLAYLISTSCROLLER_ID}
     >
       <PageIndicatorContainer>
-        {Array(numPages === 1 ? 0 : numPages)
+        {Array(itemsPerPage === "0" || numPages === 1 ? 0 : numPages)
           .fill(true)
           .map((_, i) => (
             <div key={`pi_${i}`} className={i === pageIdx ? "active" : ""} />
           ))}
       </PageIndicatorContainer>
+
+      <PlaylistartContainer pageIdx={pageIdx}>
+        <PlaylistartContainerPadding />
+        {containedPlaylistIndices.map((plIdx) => (
+          <Playlistart
+            key={data.playlists[plIdx].info.id}
+            src={data.playlists[plIdx].info.images[1]?.url}
+            alt={data.playlists[plIdx].info.name}
+            onMouseEnter={() => updateHoveredPlaylist(plIdx)}
+          />
+        ))}
+        <PlaylistartContainerPadding />
+      </PlaylistartContainer>
+
       <PlaylistartScrollWrapper
         onMouseLeave={() => resetHoveredPlaylist()}
         hover={hover}
       >
-        <ScrollButton
-          left
-          onClick={(e) => {
-            e.stopPropagation();
-            scrollLeft();
-          }}
-        >
+        <ScrollButton left onClick={scrollLeft}>
           {"<"}
         </ScrollButton>
-        <PlaylistartContainer pageIdx={pageIdx}>
-          <PlaylistartContainerPadding />
-          {containedPlaylistIndices.map((plIdx) => (
-            <Playlistart
-              key={data.playlists[plIdx].info.id}
-              src={data.playlists[plIdx].info.images[1]?.url}
-              alt={data.playlists[plIdx].info.name}
-              onMouseEnter={() => updateHoveredPlaylist(plIdx)}
-            />
-          ))}
-          <PlaylistartContainerPadding />
-        </PlaylistartContainer>
+
         <ScrollButton right onClick={scrollRight}>
           {">"}
         </ScrollButton>
@@ -120,7 +135,20 @@ const sliderPadding = `${CSS_REM__SLIDER_PADDING}rem`;
 const playlistartSize = `${CSS_REM__PLAYLISTART_SIZE}rem`;
 const plBorderRadius = "0.25rem";
 
+const initialFade = css`
+  opacity: 1;
+  ${(props) => {
+    if (props.isLoading)
+      return css`
+        opacity: 0;
+      `;
+  }}
+  transition: opacity 250ms ease-out;
+`;
+
 const PlaylistScrollerDiv = styled.div`
+  ${initialFade};
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -131,7 +159,7 @@ const PlaylistScrollerDiv = styled.div`
   border-radius: 0.5em;
   overflow: hidden;
 
-  --ipp: var(--pscalc--items-per-page);
+  --ipp: ${(props) => props.itemsPerPage};
   --total-space: calc(100% - var(--ipp) * ${playlistartSize});
   --space-between: calc(var(--total-space) / (var(--ipp) + 1));
 `;
@@ -143,6 +171,7 @@ const Playlistart = styled.img`
   border: 1px solid #aaa;
   height: ${playlistartSize};
   margin: 0 calc(var(--space-between) / 2);
+  transition: margin 350ms ease-out;
 
   &:not(:hover) {
     filter: brightness(65%);

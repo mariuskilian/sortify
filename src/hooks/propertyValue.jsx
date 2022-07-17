@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export function usePropertyValue(property, ref = null) {
-  const [val, _setVal] = useState(null);
+  const [val, _setVal] = useState(getPropertyValue(property, ref));
   useEffect(() => {
     setVal(getPropertyValue(property, ref));
     // eslint-disable-next-line react-hooks/exhaustive-deps
