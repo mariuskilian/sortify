@@ -63,15 +63,18 @@ export function PlaylistScroller(props) {
   const scrollLeft = () => setPageIdx((i) => mod(--i, numPages));
   const scrollRight = () => setPageIdx((i) => mod(++i, numPages));
 
-  const ScrollButton = ({ children, ...props }) => {
+  const ScrollButton = ({ side }) => {
+    const isLeft = side === "left";
+    const scroll = isLeft ? scrollLeft : scrollRight;
+    const label = isLeft ? "<" : ">";
     return (
-      <>
-        {numPages > 1 && (
-          <ScrollBtn onMouseEnter={resetHoveredPlaylist} {...props}>
-            {children}
-          </ScrollBtn>
-        )}
-      </>
+      <ScrollBtn
+        onMouseEnter={resetHoveredPlaylist}
+        side={side}
+        onClick={scroll}
+      >
+        {label}
+      </ScrollBtn>
     );
   };
   //#endregion
@@ -94,30 +97,26 @@ export function PlaylistScroller(props) {
           ))}
       </PageIndicatorContainer>
 
-      <PlaylistartContainer pageIdx={pageIdx}>
-        <PlaylistartContainerPadding />
-        {containedPlaylistIndices.map((plIdx) => (
-          <Playlistart
-            key={data.playlists[plIdx].info.id}
-            src={data.playlists[plIdx].info.images[1]?.url}
-            alt={data.playlists[plIdx].info.name}
-            onMouseEnter={() => updateHoveredPlaylist(plIdx)}
-          />
-        ))}
-        <PlaylistartContainerPadding />
-      </PlaylistartContainer>
-
       <PlaylistartScrollWrapper
         onMouseLeave={() => resetHoveredPlaylist()}
         hover={hover}
       >
-        <ScrollButton left onClick={scrollLeft}>
-          {"<"}
-        </ScrollButton>
+        <ScrollButton side="left" />
 
-        <ScrollButton right onClick={scrollRight}>
-          {">"}
-        </ScrollButton>
+        <PlaylistartContainer pageIdx={pageIdx}>
+          <PlaylistartContainerPadding />
+          {containedPlaylistIndices.map((plIdx) => (
+            <Playlistart
+              key={data.playlists[plIdx].info.id}
+              src={data.playlists[plIdx].info.images[1]?.url}
+              alt={data.playlists[plIdx].info.name}
+              onMouseEnter={() => updateHoveredPlaylist(plIdx)}
+            />
+          ))}
+          <PlaylistartContainerPadding />
+        </PlaylistartContainer>
+
+        <ScrollButton side="right" />
       </PlaylistartScrollWrapper>
       <PlaylistartText>{hoveredPlaylist}</PlaylistartText>
     </PlaylistScrollerDiv>
@@ -207,13 +206,13 @@ const ScrollBtn = styled.button`
   }
 
   ${(props) => {
-    if (props.left)
+    if (props.side === "left")
       return css`
         left: -3px;
         border-top-right-radius: ${plBorderRadius};
         border-bottom-right-radius: ${plBorderRadius};
       `;
-    if (props.right)
+    if (props.side === "right")
       return css`
         right: -3px;
         border-top-left-radius: ${plBorderRadius};

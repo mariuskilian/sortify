@@ -46,7 +46,7 @@ export function PlaylistScrollerCalculator() {
       clearTimeout(d);
       return d;
     });
-    setDoit(() => setTimeout(() => func(), 200));
+    setDoit(() => setTimeout(() => func(), 500));
   };
 
   useEffect(() => {
