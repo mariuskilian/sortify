@@ -68,13 +68,15 @@ export function PlaylistScroller(props) {
     const scroll = isLeft ? scrollLeft : scrollRight;
     const label = isLeft ? "<" : ">";
     return (
-      <ScrollBtn
-        onMouseEnter={resetHoveredPlaylist}
-        side={side}
-        onClick={scroll}
-      >
-        {label}
-      </ScrollBtn>
+      numPages > 1 && (
+        <ScrollBtn
+          onMouseEnter={resetHoveredPlaylist}
+          side={side}
+          onClick={scroll}
+        >
+          {label}
+        </ScrollBtn>
+      )
     );
   };
   //#endregion
@@ -195,6 +197,7 @@ const ScrollBtn = styled.button`
   width: calc(${sliderPadding} + 4px);
   border: none;
   z-index: 10;
+  flex: 0 0 1;
   background-color: #333a;
   font-weight: bold;
   color: white;
@@ -223,6 +226,7 @@ const ScrollBtn = styled.button`
 
 const PlaylistartContainer = styled.span`
   display: flex;
+  flex: 0 0 1;
   width: calc(100% - 2 * ${sliderPadding});
   transition: transform 350ms ease-in-out;
   transform: translateX(

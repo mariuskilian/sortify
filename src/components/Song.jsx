@@ -29,9 +29,6 @@ export function Song(props) {
 //#region Styles
 const SongIndex = styled.div`
   position: relative;
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: 0;
   text-align: right;
   width: 3em;
 `;
@@ -49,10 +46,13 @@ const Songname = styled.div`
 const ArtistAlbum = styled.div``;
 
 const SongnameArtistWrapper = styled.div`
+  flex-grow: 0;
+  flex-shrink: 0;
   width: 50%;
 `;
 
 const PlaylistScrollerWrapper = styled.div`
+  flex-grow: 0;
   width: 50%;
 `;
 
